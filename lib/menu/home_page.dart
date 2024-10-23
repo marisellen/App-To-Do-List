@@ -1,7 +1,9 @@
 import 'package:app_to_do_list/configure/settings-page.dart';
+import 'package:app_to_do_list/reminders/reminders_page.dart';
 import 'package:app_to_do_list/tasks/categories_page.dart';
 import 'package:app_to_do_list/tasks/edit_task_page.dart';
 import 'package:flutter/material.dart';
+
 
 class HomePage extends StatefulWidget {
   static String tag = 'home-page';
@@ -105,6 +107,15 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Método para abrir a página de lembretes
+  void _openRemindersPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => RemindersPage(), // Navegando para a página de lembretes
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,7 +210,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Alinha os botões
                 children: [
                   ElevatedButton(
                     onPressed: _openCategoriesPage,
@@ -208,6 +219,10 @@ class _HomePageState extends State<HomePage> {
                   ElevatedButton(
                     onPressed: _addTask,
                     child: const Text('Adicionar Tarefa'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _openRemindersPage,
+                    child: const Text('Lembretes'),
                   ),
                 ],
               ),
