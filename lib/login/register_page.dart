@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
   static String tag = 'register-page'; // Usado para navegação por rotas
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   _RegisterPageState createState() => _RegisterPageState();

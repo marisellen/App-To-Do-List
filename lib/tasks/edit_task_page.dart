@@ -6,7 +6,7 @@ class EditTaskPage extends StatefulWidget {
   final List<Map<String, dynamic>> categories; // Recebe a lista de categorias
   final Function(Map<String, dynamic>) onSave;
 
-  const EditTaskPage({
+  const EditTaskPage({super.key, 
     required this.task,
     required this.categories,
     required this.onSave,
@@ -30,11 +30,13 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _selectedTime = widget.task['time'];
     titleController.text = widget.task['title'];
     descriptionController.text = widget.task['description'];
-    
+
     // Verifique se a categoria existe nas categorias
     selectedCategory = widget.categories
-        .map((category) => category['name'])
-        .contains(widget.task['category']) ? widget.task['category'] : null; 
+            .map((category) => category['name'])
+            .contains(widget.task['category'])
+        ? widget.task['category']
+        : null;
   }
 
   @override
@@ -70,6 +72,13 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
   }
 
+  // Função auxiliar para verificar se os campos obrigatórios estão preenchidos
+  bool _isFormValid() {
+    return titleController.text.isNotEmpty &&
+        descriptionController.text.isNotEmpty &&
+        selectedCategory != null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,14 +93,16 @@ class _EditTaskPageState extends State<EditTaskPage> {
             TextField(
               controller: titleController,
               decoration: const InputDecoration(labelText: 'Título da Tarefa'),
+              onChanged: (_) =>
+                  setState(() {}), // Atualiza o estado quando o texto muda
             ),
             const SizedBox(height: 16.0),
             TextField(
               controller: descriptionController,
               decoration: const InputDecoration(labelText: 'Descrição'),
+              onChanged: (_) =>
+                  setState(() {}), // Atualiza o estado quando o texto muda
             ),
-            const SizedBox(height: 16.0),
-
             // Botão para selecionar a data
             ElevatedButton(
               onPressed: () => _selectDate(context),
@@ -133,11 +144,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
             const SizedBox(height: 16.0),
 
             ElevatedButton(
-              onPressed: titleController.text.isEmpty ||
-                      descriptionController.text.isEmpty ||
-                      selectedCategory == null // Verifique se está nulo
-                  ? null
-                  : () {
+              onPressed: _isFormValid()
+                  ? () {
                       widget.onSave({
                         'title': titleController.text,
                         'description': descriptionController.text,
@@ -147,7 +155,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
                         'time': _selectedTime,
                       });
                       Navigator.of(context).pop();
-                    },
+                    }
+                  : null, // Desativa o botão se o formulário não for válido
               child: const Text('Salvar'),
             ),
           ],

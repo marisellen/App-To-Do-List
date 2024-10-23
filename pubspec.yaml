@@ -17,7 +17,8 @@ dependencies:
     sdk: flutter
   provider: ^6.0.5   # Versão atualizada do provider
   cupertino_icons: ^1.0.8
-  intl: ^0.18.0      # Adicionando o pacote intl para formatação de datas
+  intl: ^0.18.0      # Adicionando o pacote intl para formatação de data
+  flutter_local_notifications: ^14.0.1 # Use a versão mais recente disponível
 
 # Dependências para desenvolvimento e testes
 dev_dependencies:

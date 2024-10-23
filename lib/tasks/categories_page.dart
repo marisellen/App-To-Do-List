@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CategoriesPage extends StatefulWidget {
   final Function(List<Map<String, dynamic>>) onCategoriesUpdated; // Callback para atualizar categorias
 
-  const CategoriesPage({Key? key, required this.onCategoriesUpdated}) : super(key: key);
+  const CategoriesPage({super.key, required this.onCategoriesUpdated});
 
   @override
   _CategoriesPageState createState() => _CategoriesPageState();

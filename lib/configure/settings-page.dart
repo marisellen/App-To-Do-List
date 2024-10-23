@@ -5,7 +5,7 @@ import 'theme_manager.dart';
 
 class SettingsPage extends StatefulWidget {
   static String tag = 'settings-page'; // Usado para navegação por rotas
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
