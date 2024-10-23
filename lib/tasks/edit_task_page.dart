@@ -6,7 +6,7 @@ class EditTaskPage extends StatefulWidget {
   final List<Map<String, dynamic>> categories; // Recebe a lista de categorias
   final Function(Map<String, dynamic>) onSave;
 
-  const EditTaskPage({super.key, 
+  const EditTaskPage({
     required this.task,
     required this.categories,
     required this.onSave,
@@ -93,15 +93,13 @@ class _EditTaskPageState extends State<EditTaskPage> {
             TextField(
               controller: titleController,
               decoration: const InputDecoration(labelText: 'Título da Tarefa'),
-              onChanged: (_) =>
-                  setState(() {}), // Atualiza o estado quando o texto muda
+              onChanged: (_) => setState(() {}), // Atualiza o estado quando o texto muda
             ),
             const SizedBox(height: 16.0),
             TextField(
               controller: descriptionController,
               decoration: const InputDecoration(labelText: 'Descrição'),
-              onChanged: (_) =>
-                  setState(() {}), // Atualiza o estado quando o texto muda
+              onChanged: (_) => setState(() {}), // Atualiza o estado quando o texto muda
             ),
             // Botão para selecionar a data
             ElevatedButton(

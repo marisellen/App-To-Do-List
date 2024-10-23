@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart'; // Certifique-se de importar o provider corretamente
 
 import 'theme_manager.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class SettingsPage extends StatefulWidget {
   static String tag = 'settings-page'; // Usado para navegação por rotas
@@ -12,12 +16,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  // Controladores para obter os valores dos campos de texto
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // Variável para controlar o status das notificações
   bool _notificationsEnabled = false;
 
   @override
@@ -30,7 +31,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Acessa o ThemeManager via Provider
     final themeManager = Provider.of<ThemeManager>(context);
 
     return Scaffold(
@@ -50,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Switch(
                   value: themeManager.isDarkTheme,
                   onChanged: (value) {
-                    themeManager.toggleTheme(); // Alterna o tema ao trocar o switch
+                    themeManager.toggleTheme();
                   },
                 ),
               ],
@@ -98,7 +98,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: _notificationsEnabled,
                   onChanged: (value) {
                     setState(() {
-                      _notificationsEnabled = value; // Alterna o status das notificações
+                      _notificationsEnabled = value;
+                      if (_notificationsEnabled) {
+                        showNotification();
+                      }
                     });
                   },
                 ),
@@ -111,7 +114,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 // Exibe mensagem de confirmação de salvamento
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Configurações salvas com sucesso')),
+                  const SnackBar(
+                      content: Text('Configurações salvas com sucesso')),
                 );
                 // Aqui você pode adicionar lógica para persistir as configurações, se necessário.
               },
@@ -120,6 +124,30 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // Função para mostrar a notificação
+  Future<void> showNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id', // ID do canal
+      'your_channel_name', // Nome do canal
+      channelDescription: 'your_channel_description',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // ID da notificação
+      'Título da Notificação', // Título
+      'Corpo da Notificação', // Corpo
+      platformChannelSpecifics,
+      payload: 'item x', // Dado opcional para identificar a notificação
     );
   }
 }
