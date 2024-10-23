@@ -3,7 +3,44 @@ import 'package:app_to_do_list/reminders/reminders_page.dart';
 import 'package:app_to_do_list/tasks/categories_page.dart';
 import 'package:app_to_do_list/tasks/edit_task_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones(); // Inicializa as zonas horárias
+
+  final initializationSettingsAndroid = AndroidInitializationSettings('app_icon'); // Use o nome do ícone que você adicionou
+
+  final initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'To-Do List',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const HomePage(),
+      routes: {
+        SettingsPage.tag: (context) => const SettingsPage(),
+      },
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
   static String tag = 'home-page';
@@ -27,8 +64,35 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  Future<void> showNotification(DateTime scheduledDate) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      channelDescription: 'your_channel_description',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Título da Notificação',
+      'Corpo da Notificação',
+      tz.TZDateTime.from(scheduledDate, tz.local),
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
   void _addTask() {
     if (_taskController.text.isNotEmpty) {
+      DateTime scheduledDate = DateTime.now().add(Duration(minutes: 5)); // Defina quando a notificação deve ser disparada
+
+      showNotification(scheduledDate); // Agendar a notificação
+
       setState(() {
         _tasks.add({
           'title': _taskController.text,
@@ -233,3 +297,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+

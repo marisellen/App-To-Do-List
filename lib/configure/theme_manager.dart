@@ -10,4 +10,3 @@ class ThemeManager with ChangeNotifier {
     notifyListeners(); // Notifica os ouvintes sobre a mudança
   }
 }
-

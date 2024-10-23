@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:provider/provider.dart'; // Certifique-se de importar o provider corretamente
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Importar SharedPreferences
 
 import 'theme_manager.dart';
 
@@ -22,11 +23,31 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _notificationsEnabled = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadNotificationSettings(); // Carrega as configurações de notificação no início
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Função para carregar as configurações de notificação
+  void _loadNotificationSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationsEnabled = prefs.getBool('notifications_enabled') ?? false; // Carrega o estado salvo
+    });
+  }
+
+  // Função para salvar as configurações de notificação
+  void _saveNotificationSettings(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('notifications_enabled', value); // Salva o estado das notificações
   }
 
   @override
@@ -98,11 +119,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: _notificationsEnabled,
                   onChanged: (value) {
                     setState(() {
-                      _notificationsEnabled = value;
-                      if (_notificationsEnabled) {
-                        showNotification();
-                      }
+                      _notificationsEnabled = value; // Atualiza o estado
+                      _saveNotificationSettings(value); // Salva o estado
                     });
+                    if (value) {
+                      showNotification(); // Chama a função para mostrar a notificação se ativado
+                    }
                   },
                 ),
               ],
@@ -117,7 +139,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SnackBar(
                       content: Text('Configurações salvas com sucesso')),
                 );
-                // Aqui você pode adicionar lógica para persistir as configurações, se necessário.
               },
               child: const Text('Salvar Configurações'),
             ),
@@ -151,3 +172,4 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
+

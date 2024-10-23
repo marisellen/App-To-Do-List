@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Importa a biblioteca intl para formatação de data
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart' as tz; // Importando o pacote timezone
 
 class EditTaskPage extends StatefulWidget {
   final Map<String, dynamic> task;
-  final List<Map<String, dynamic>> categories; // Recebe a lista de categorias
+  final List<Map<String, dynamic>> categories; 
   final Function(Map<String, dynamic>) onSave;
 
   const EditTaskPage({
@@ -21,7 +23,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   TimeOfDay? _selectedTime;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  String? selectedCategory; // Mudar para nullable
+  String? selectedCategory; 
 
   @override
   void initState() {
@@ -30,8 +32,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
     _selectedTime = widget.task['time'];
     titleController.text = widget.task['title'];
     descriptionController.text = widget.task['description'];
-
-    // Verifique se a categoria existe nas categorias
     selectedCategory = widget.categories
             .map((category) => category['name'])
             .contains(widget.task['category'])
@@ -72,11 +72,39 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
   }
 
-  // Função auxiliar para verificar se os campos obrigatórios estão preenchidos
   bool _isFormValid() {
     return titleController.text.isNotEmpty &&
         descriptionController.text.isNotEmpty &&
         selectedCategory != null;
+  }
+
+  Future<void> _scheduleNotification(DateTime scheduledDate) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'task_channel', // ID do canal
+      'Task Notifications', // Nome do canal
+      channelDescription: 'Notificações de tarefas',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    // Converte DateTime para TZDateTime
+    tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+
+    await FlutterLocalNotificationsPlugin().zonedSchedule(
+      0,
+      'Lembrete de Tarefa',
+      titleController.text,
+      tzScheduledDate,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
   }
 
   @override
@@ -93,15 +121,14 @@ class _EditTaskPageState extends State<EditTaskPage> {
             TextField(
               controller: titleController,
               decoration: const InputDecoration(labelText: 'Título da Tarefa'),
-              onChanged: (_) => setState(() {}), // Atualiza o estado quando o texto muda
+              onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 16.0),
             TextField(
               controller: descriptionController,
               decoration: const InputDecoration(labelText: 'Descrição'),
-              onChanged: (_) => setState(() {}), // Atualiza o estado quando o texto muda
+              onChanged: (_) => setState(() {}),
             ),
-            // Botão para selecionar a data
             ElevatedButton(
               onPressed: () => _selectDate(context),
               child: Text(_selectedDate == null
@@ -109,8 +136,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
                   : 'Data: ${DateFormat('dd/MM/yyyy').format(_selectedDate!)}'),
             ),
             const SizedBox(height: 16.0),
-
-            // Botão para selecionar o horário
             ElevatedButton(
               onPressed: () => _selectTime(context),
               child: Text(_selectedTime == null
@@ -118,8 +143,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
                   : 'Horário: ${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'),
             ),
             const SizedBox(height: 16.0),
-
-            // Dropdown para selecionar a categoria
             DropdownButton<String>(
               value: selectedCategory,
               hint: const Text('Selecionar Categoria'),
@@ -140,10 +163,17 @@ class _EditTaskPageState extends State<EditTaskPage> {
               ).toList(),
             ),
             const SizedBox(height: 16.0),
-
             ElevatedButton(
               onPressed: _isFormValid()
                   ? () {
+                      DateTime scheduledDate = DateTime(
+                        _selectedDate!.year,
+                        _selectedDate!.month,
+                        _selectedDate!.day,
+                        _selectedTime!.hour,
+                        _selectedTime!.minute,
+                      );
+                      _scheduleNotification(scheduledDate);
                       widget.onSave({
                         'title': titleController.text,
                         'description': descriptionController.text,
@@ -154,7 +184,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                       });
                       Navigator.of(context).pop();
                     }
-                  : null, // Desativa o botão se o formulário não for válido
+                  : null,
               child: const Text('Salvar'),
             ),
           ],

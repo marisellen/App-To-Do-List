@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz; // Importar a biblioteca timezone
+import 'package:timezone/timezone.dart' as tz; // Importar a biblioteca timezone
 
 class Reminder {
   String title;
@@ -21,6 +24,27 @@ class _RemindersPageState extends State<RemindersPage> {
   final TextEditingController _descriptionController = TextEditingController();
   DateTime? _selectedDateTime;
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+    // Inicializa a configuração do FlutterLocalNotificationsPlugin
+    _initializeNotifications();
+    tz.initializeTimeZones(); // Inicializa os fusos horários
+  }
+
+  void _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -31,11 +55,13 @@ class _RemindersPageState extends State<RemindersPage> {
   void _addReminder() {
     if (_titleController.text.isNotEmpty && _selectedDateTime != null) {
       setState(() {
-        _reminders.add(Reminder(
+        final reminder = Reminder(
           title: _titleController.text,
           description: _descriptionController.text,
           dateTime: _selectedDateTime!,
-        ));
+        );
+        _reminders.add(reminder);
+        _scheduleNotification(reminder); // Agenda a notificação
         _titleController.clear();
         _descriptionController.clear();
         _selectedDateTime = null;
@@ -48,6 +74,32 @@ class _RemindersPageState extends State<RemindersPage> {
         const SnackBar(content: Text('Por favor, preencha todos os campos!')),
       );
     }
+  }
+
+  void _scheduleNotification(Reminder reminder) async {
+    // Converte DateTime para TZDateTime
+    tz.TZDateTime scheduledTZDateTime = tz.TZDateTime.from(reminder.dateTime, tz.local);
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      channelDescription: 'your_channel_description',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Lembrete: ${reminder.title}',
+      reminder.description,
+      scheduledTZDateTime,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+    );
   }
 
   void _editReminder(int index) {
@@ -70,6 +122,7 @@ class _RemindersPageState extends State<RemindersPage> {
                     description: _descriptionController.text,
                     dateTime: _selectedDateTime!,
                   );
+                  _scheduleNotification(_reminders[index]); // Reagendar a notificação
                   _titleController.clear();
                   _descriptionController.clear();
                   _selectedDateTime = null;
@@ -193,7 +246,7 @@ class _RemindersPageState extends State<RemindersPage> {
             ),
           ],
         ),
-      ),
+      ),   
     );
   }
 }
