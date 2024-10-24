@@ -8,11 +8,13 @@ import 'login/login_page.dart';
 import 'login/register_page.dart';
 import 'menu/home_page.dart';
 
+// Instância para gerenciar notificações locais
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Configuração para inicializar notificações no Android
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -20,6 +22,7 @@ Future<void> main() async {
     android: initializationSettingsAndroid,
   );
 
+  // Inicialização do plugin de notificações
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   runApp(
@@ -57,7 +60,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(title: const Text('Notificações Locais')),
         body: Center(
           child: ElevatedButton(
-            onPressed: showNotification,
+            onPressed: showNotification, // Botão para mostrar notificação
             child: const Text('Mostrar Notificação'),
           ),
         ),
@@ -65,7 +68,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  // Função para mostrar a notificação
+  // Função para mostrar uma notificação
   Future<void> showNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-import 'package:timezone/timezone.dart' as tz; // Importando o pacote timezone
+import 'package:timezone/timezone.dart' as tz;
 
 class EditTaskPage extends StatefulWidget {
   final Map<String, dynamic> task;
@@ -23,7 +23,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   TimeOfDay? _selectedTime;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  String? selectedCategory; 
+  String? selectedCategory;
 
   @override
   void initState() {
@@ -81,8 +81,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
   Future<void> _scheduleNotification(DateTime scheduledDate) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'task_channel', // ID do canal
-      'Task Notifications', // Nome do canal
+      'task_channel',
+      'Task Notifications',
       channelDescription: 'Notificações de tarefas',
       importance: Importance.max,
       priority: Priority.high,
@@ -92,7 +92,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    // Converte DateTime para TZDateTime
     tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
 
     await FlutterLocalNotificationsPlugin().zonedSchedule(

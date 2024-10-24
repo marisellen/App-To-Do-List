@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Importar SharedPreferences
+import 'package:shared_preferences/shared_preferences.dart'; // Importação do SharedPreferences
 
 import 'theme_manager.dart';
 
+// Instância para gerenciar notificações locais
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -20,12 +21,12 @@ class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _notificationsEnabled = false;
+  bool _notificationsEnabled = false; // Estado para gerenciar a ativação das notificações
 
   @override
   void initState() {
     super.initState();
-    _loadNotificationSettings(); // Carrega as configurações de notificação no início
+    _loadNotificationSettings(); // Carrega as configurações de notificação ao iniciar
   }
 
   @override
@@ -36,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
     super.dispose();
   }
 
-  // Função para carregar as configurações de notificação
+  // Função para carregar as configurações de notificação salvas
   void _loadNotificationSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -63,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            // Trocar Tema
+            // Switch para trocar o tema entre claro e escuro
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -78,7 +79,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20.0),
 
-            // Campo de Nome
+            // Campo de texto para mudar o nome
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
@@ -88,7 +89,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20.0),
 
-            // Campo de E-mail
+            // Campo de texto para mudar o e-mail
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -99,7 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20.0),
 
-            // Campo de Senha
+            // Campo de texto para mudar a senha
             TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
@@ -110,7 +111,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20.0),
 
-            // Botão de Notificações
+            // Switch para ativar/desativar notificações
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -131,10 +132,10 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20.0),
 
-            // Botão de Salvar Configurações
+            // Botão para salvar as configurações
             ElevatedButton(
               onPressed: () {
-                // Exibe mensagem de confirmação de salvamento
+                // Exibe uma mensagem de confirmação de salvamento
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                       content: Text('Configurações salvas com sucesso')),
@@ -148,7 +149,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  // Função para mostrar a notificação
+  // Função para mostrar uma notificação
   Future<void> showNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(

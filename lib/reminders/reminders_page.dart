@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz; // Importar a biblioteca timezone
-import 'package:timezone/timezone.dart' as tz; // Importar a biblioteca timezone
+import 'package:intl/intl.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class Reminder {
   String title;
@@ -29,9 +30,8 @@ class _RemindersPageState extends State<RemindersPage> {
   @override
   void initState() {
     super.initState();
-    // Inicializa a configuração do FlutterLocalNotificationsPlugin
     _initializeNotifications();
-    tz.initializeTimeZones(); // Inicializa os fusos horários
+    tz.initializeTimeZones();
   }
 
   void _initializeNotifications() async {
@@ -61,7 +61,7 @@ class _RemindersPageState extends State<RemindersPage> {
           dateTime: _selectedDateTime!,
         );
         _reminders.add(reminder);
-        _scheduleNotification(reminder); // Agenda a notificação
+        _scheduleNotification(reminder);
         _titleController.clear();
         _descriptionController.clear();
         _selectedDateTime = null;
@@ -77,7 +77,6 @@ class _RemindersPageState extends State<RemindersPage> {
   }
 
   void _scheduleNotification(Reminder reminder) async {
-    // Converte DateTime para TZDateTime
     tz.TZDateTime scheduledTZDateTime = tz.TZDateTime.from(reminder.dateTime, tz.local);
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -107,97 +106,46 @@ class _RemindersPageState extends State<RemindersPage> {
     _descriptionController.text = _reminders[index].description;
     _selectedDateTime = _reminders[index].dateTime;
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Editar Lembrete'),
-          content: _buildReminderForm(),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _reminders[index] = Reminder(
-                    title: _titleController.text,
-                    description: _descriptionController.text,
-                    dateTime: _selectedDateTime!,
-                  );
-                  _scheduleNotification(_reminders[index]); // Reagendar a notificação
-                  _titleController.clear();
-                  _descriptionController.clear();
-                  _selectedDateTime = null;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Salvar'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar'),
-            ),
-          ],
-        );
-      },
-    );
+    setState(() {
+      _reminders.removeAt(index);
+    });
   }
 
   void _deleteReminder(int index) {
     setState(() {
       _reminders.removeAt(index);
     });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Lembrete excluído!')),
+    );
   }
 
-  Widget _buildReminderForm() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TextField(
-          controller: _titleController,
-          decoration: const InputDecoration(labelText: 'Título'),
-        ),
-        TextField(
-          controller: _descriptionController,
-          decoration: const InputDecoration(labelText: 'Descrição'),
-        ),
-        const SizedBox(height: 8.0),
-        TextButton(
-          onPressed: () async {
-            final DateTime? picked = await showDatePicker(
-              context: context,
-              initialDate: _selectedDateTime ?? DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2101),
-            );
-
-            if (picked != null && picked != _selectedDateTime) {
-              final TimeOfDay? timePicked = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
-              );
-
-              if (timePicked != null) {
-                setState(() {
-                  _selectedDateTime = DateTime(
-                    picked.year,
-                    picked.month,
-                    picked.day,
-                    timePicked.hour,
-                    timePicked.minute,
-                  );
-                });
-              }
-            }
-          },
-          child: Text(
-            _selectedDateTime == null
-                ? 'Selecionar Data e Hora'
-                : 'Data: ${_selectedDateTime!.toLocal()}',
-          ),
-        ),
-      ],
+  Future<void> _selectDateTime(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
     );
+
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
   }
 
   @override
@@ -209,8 +157,24 @@ class _RemindersPageState extends State<RemindersPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildReminderForm(),
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(labelText: 'Título do Lembrete'),
+            ),
+            const SizedBox(height: 8.0),
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(labelText: 'Descrição'),
+            ),
+            const SizedBox(height: 8.0),
+            ElevatedButton(
+              onPressed: () => _selectDateTime(context),
+              child: Text(_selectedDateTime == null
+                  ? 'Selecionar Data e Hora'
+                  : 'Data e Hora: ${DateFormat('dd/MM/yyyy HH:mm').format(_selectedDateTime!)}'),
+            ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _addReminder,
@@ -222,23 +186,21 @@ class _RemindersPageState extends State<RemindersPage> {
                 itemCount: _reminders.length,
                 itemBuilder: (context, index) {
                   final reminder = _reminders[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(reminder.title),
-                      subtitle: Text('${reminder.description}\n${reminder.dateTime}'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _editReminder(index),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _deleteReminder(index),
-                          ),
-                        ],
-                      ),
+                  return ListTile(
+                    title: Text(reminder.title),
+                    subtitle: Text(DateFormat('dd/MM/yyyy HH:mm').format(reminder.dateTime)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _editReminder(index),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteReminder(index),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -246,7 +208,7 @@ class _RemindersPageState extends State<RemindersPage> {
             ),
           ],
         ),
-      ),   
+      ),
     );
   }
 }
