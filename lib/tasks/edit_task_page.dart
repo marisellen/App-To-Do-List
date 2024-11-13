@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 class EditTaskPage extends StatefulWidget {
   final Map<String, dynamic> task;
@@ -91,19 +90,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
-
-    await FlutterLocalNotificationsPlugin().zonedSchedule(
-      0,
-      'Lembrete de Tarefa',
-      titleController.text,
-      tzScheduledDate,
-      platformChannelSpecifics,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
   }
 
   @override

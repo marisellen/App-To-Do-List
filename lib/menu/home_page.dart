@@ -13,6 +13,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones(); // Inicializa as zonas horárias
 
+  tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
+
   final initializationSettingsAndroid = AndroidInitializationSettings('app_icon'); // Use o nome do ícone que você adicionou
 
   final initializationSettings = InitializationSettings(
@@ -52,7 +54,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> _tasks = [];
-  final List<Map<String, dynamic>> _categories = []; // Lista de categorias
+  final List<Map<String, dynamic>> _categories = [];
   final TextEditingController _taskController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -64,34 +66,8 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<void> showNotification(DateTime scheduledDate) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'your_channel_id',
-      'your_channel_name',
-      channelDescription: 'your_channel_description',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: false,
-    );
-
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      'Título da Notificação',
-      'Corpo da Notificação',
-      tz.TZDateTime.from(scheduledDate, tz.local),
-      platformChannelSpecifics,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
-  }
-
   void _addTask() {
     if (_taskController.text.isNotEmpty) {
-      DateTime scheduledDate = DateTime.now().add(Duration(minutes: 5)); // Defina quando a notificação deve ser disparada
-
-      showNotification(scheduledDate); // Agendar a notificação
 
       setState(() {
         _tasks.add({
@@ -125,10 +101,10 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
         builder: (context) => EditTaskPage(
           task: _tasks[index],
-          categories: _categories, // Passa a lista de categorias
+          categories: _categories,
           onSave: (updatedTask) {
             setState(() {
-              _tasks[index] = updatedTask; // Atualiza a tarefa com os novos dados
+              _tasks[index] = updatedTask;
             });
           },
         ),
@@ -152,7 +128,6 @@ class _HomePageState extends State<HomePage> {
     }).toList();
   }
 
-  // Método para abrir a página de categorias
   void _openCategoriesPage() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -166,16 +141,14 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     ).then((_) {
-      // Atualiza a lista de categorias quando voltar da CategoriesPage
       setState(() {});
     });
   }
 
-  // Método para abrir a página de lembretes
   void _openRemindersPage() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => RemindersPage(), // Navegando para a página de lembretes
+        builder: (context) => RemindersPage(),
       ),
     );
   }
@@ -297,4 +270,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-

@@ -89,16 +89,6 @@ class _RemindersPageState extends State<RemindersPage> {
     );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      'Lembrete: ${reminder.title}',
-      reminder.description,
-      scheduledTZDateTime,
-      platformChannelSpecifics,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
   }
 
   void _editReminder(int index) {
