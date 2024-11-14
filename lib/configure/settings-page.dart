@@ -79,27 +79,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20.0),
 
-            // Campo de texto para mudar o nome
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Mudar Nome',
-              ),
-              textInputAction: TextInputAction.next,
-            ),
-            const SizedBox(height: 20.0),
-
-            // Campo de texto para mudar o e-mail
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Mudar E-mail',
-              ),
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-            ),
-            const SizedBox(height: 20.0),
-
             // Campo de texto para mudar a senha
             TextField(
               controller: _passwordController,

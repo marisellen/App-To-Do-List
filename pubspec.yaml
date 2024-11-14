@@ -34,3 +34,4 @@ flutter:
   # Definição de ativos (imagens, etc.)
   assets:
     - assets/user.png
+    - assets/fotoPerfil.png

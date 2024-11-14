@@ -7,6 +7,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'perfil_page.dart';
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() {
@@ -152,21 +154,30 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('To-Do List'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.of(context).pushNamed(SettingsPage.tag);
-            },
-          ),
-        ],
-      ),
+      @override
+      Widget build(BuildContext context) {
+        return Scaffold(
+    appBar: AppBar(
+      title: const Text('To-Do List'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(),
+              ),
+            );
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {
+            Navigator.of(context).pushNamed(SettingsPage.tag);
+          },
+        ),
+      ],
+    ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
