@@ -1,6 +1,8 @@
 import 'package:app_to_do_list/login/register_page.dart';
 import 'package:app_to_do_list/menu/home_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   static String tag = 'login-page'; // Usado para navegação por rotas
@@ -22,12 +24,56 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _login() {
+  // Método de login com e-mail/senha
+  Future<void> _loginWithEmail() async {
     if (_formKey.currentState!.validate()) {
-      // Aqui você pode adicionar a lógica de autenticação
-      // Se o login for bem-sucedido, navegue para a HomePage
-      Navigator.of(context).pushReplacementNamed(HomePage.tag);
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        Navigator.of(context).pushReplacementNamed(HomePage.tag);
+      } catch (e) {
+        _showErrorDialog('Erro ao fazer login: ${e.toString()}');
+      }
     }
+  }
+
+  // Método de login com Google
+  Future<void> _loginWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return; // Usuário cancelou
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      Navigator.of(context).pushReplacementNamed(HomePage.tag);
+    } catch (e) {
+      _showErrorDialog('Erro ao fazer login com Google: ${e.toString()}');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Erro'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -77,17 +123,26 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Botão de login
+              // Botão de login com e-mail
               ElevatedButton(
-                onPressed: _login,
+                onPressed: _loginWithEmail,
                 child: const Text('Login'),
+              ),
+              const SizedBox(height: 16.0),
+
+              // Botão de login com Google
+              ElevatedButton.icon(
+                onPressed: _loginWithGoogle,
+                icon: const Icon(Icons.login),
+                label: const Text('Login com Google'),
               ),
               const SizedBox(height: 16.0),
 
               // Link para registro
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(RegisterPage.tag); // Navega para a página de registro
+                  Navigator.of(context)
+                      .pushNamed(RegisterPage.tag); // Navega para a página de registro
                 },
                 child: const Text('Não tem uma conta? Cadastre-se!'),
               ),

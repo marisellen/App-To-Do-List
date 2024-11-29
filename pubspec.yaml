@@ -25,6 +25,7 @@ dependencies:
   timezone: ^0.10.0
   firebase_core: ^3.8.0
   firebase_auth: ^5.3.3
+  google_sign_in: ^6.1.4
 
 # Dependências para desenvolvimento e testes
 dev_dependencies:
