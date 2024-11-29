@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
@@ -16,11 +17,19 @@ class _ContactPageState extends State<ContactPage> {
   @override
   void initState() {
     super.initState();
-    // Preenchendo os campos com dados de exemplo no formato DDI + DDD + Número
-    _phoneController.text = '+55 (11) 1234-5678'; // Telefone fixo
-    _mobileController.text = '+55 (11) 98765-4321'; // Telefone celular
+    _loadSavedData();
   }
 
+  // Carregar os dados salvos
+  void _loadSavedData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _phoneController.text = prefs.getString('phone') ?? ''; // Se não existir, fica vazio
+      _mobileController.text = prefs.getString('mobile') ?? ''; // Se não existir, fica vazio
+    });
+  }
+
+  // Limpar os campos
   void _clearFields() {
     setState(() {
       _phoneController.clear();
@@ -28,8 +37,15 @@ class _ContactPageState extends State<ContactPage> {
     });
   }
 
-  void _save() {
+  // Salvar os dados no SharedPreferences
+  void _save() async {
     if (_formKey.currentState!.validate()) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Salvar os valores dos campos
+      await prefs.setString('phone', _phoneController.text);
+      await prefs.setString('mobile', _mobileController.text);
+
       // Exibir a mensagem de sucesso quando a validação estiver ok
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

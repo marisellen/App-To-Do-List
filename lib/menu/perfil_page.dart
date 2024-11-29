@@ -11,17 +11,18 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // Variável para armazenar a imagem do perfil
+  String? _name = 'User';
+  String? _email = 'user@example.com';
+  DateTime? _birthDate = DateTime(1990, 5, 25);
+
   String? _imagePath;
 
-  // Definindo a cor do cabeçalho diretamente no código
   final Color _headerColor =
-      Color.fromARGB(168, 204, 171, 244); // Altere essa cor conforme necessário
+      Color.fromARGB(168, 204, 171, 244);
 
-  // Função para escolher a imagem (aqui pode ser o código para pegar a imagem do dispositivo)
   void _changeImage() async {
     setState(() {
-      _imagePath = 'assets/fotoPerfil.png'; // Exemplo de imagem
+      _imagePath = 'assets/fotoPerfil.png';
     });
   }
 
@@ -29,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: _headerColor, // Cor do cabeçalho
+        backgroundColor: _headerColor,
         title: const Text("Meu Perfil"),
       ),
       body: ListView(
@@ -39,10 +40,10 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: _changeImage, // Ao clicar, muda a foto
+                  onTap: _changeImage,
                   child: Container(
-                    width: 50.0, // Tamanho do quadrado
-                    height: 50.0, // Tamanho do quadrado
+                    width: 50.0,
+                    height: 50.0,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: _imagePath == null
@@ -62,8 +63,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'User',
+                    Text(
+                      _name!,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -71,8 +72,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 4.0),
-                    const Text(
-                      'Email: user@example.com',
+                    Text(
+                      'Email: $_email',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      'Data de Nascimento: ${_birthDate != null ? '${_birthDate!.day.toString().padLeft(2, '0')}/${_birthDate!.month.toString().padLeft(2, '0')}/${_birthDate!.year}' : 'Não informada'}',
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
@@ -87,12 +93,20 @@ class _ProfilePageState extends State<ProfilePage> {
             title: const Text('Dados Pessoais',
                 style: TextStyle(
                     color: Color.fromARGB(168, 204, 171, 244), fontSize: 13)),
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const PersonalDataPage()),
               );
+
+              if (result != null) {
+                setState(() {
+                  _name = result['name'];
+                  _email = result['email'];
+                  _birthDate = result['birthDate'];
+                });
+              }
             },
           ),
           ListTile(
@@ -113,3 +127,4 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
