@@ -23,6 +23,8 @@ dependencies:
   sqflite: ^2.0.0+4   
   path: ^1.8.3
   timezone: ^0.10.0
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.3
 
 # Dependências para desenvolvimento e testes
 dev_dependencies:

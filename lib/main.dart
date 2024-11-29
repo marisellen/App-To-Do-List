@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path/path.dart';
@@ -7,6 +8,7 @@ import 'package:timezone/data/latest.dart' as tz;
 
 import 'configure/settings-page.dart';
 import 'configure/theme_manager.dart';
+import 'firebase_options.dart';
 import 'login/login_page.dart';
 import 'login/register_page.dart';
 import 'menu/home_page.dart';
@@ -15,6 +17,10 @@ import 'menu/home_page.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
+WidgetsFlutterBinding.ensureInitialized();
+await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
 
   WidgetsFlutterBinding.ensureInitialized();
 
