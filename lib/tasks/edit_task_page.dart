@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 class EditTaskPage extends StatefulWidget {
   final Map<String, dynamic> task;
   final List<Map<String, dynamic>> categories; 
+=======
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+
+class EditTaskPage extends StatefulWidget {
+  final Map<String, dynamic> task;
+  final List<Map<String, dynamic>> categories;
+>>>>>>> SextaVer
   final Function(Map<String, dynamic>) onSave;
 
   const EditTaskPage({
@@ -27,6 +37,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     _selectedDate = widget.task['date'];
     _selectedTime = widget.task['time'];
     titleController.text = widget.task['title'];
@@ -36,6 +47,20 @@ class _EditTaskPageState extends State<EditTaskPage> {
             .contains(widget.task['category'])
         ? widget.task['category']
         : null;
+=======
+    _selectedDate = widget.task['date'] != null
+        ? DateTime.parse(widget.task['date'])
+        : null;
+    _selectedTime = widget.task['time'] != null
+        ? TimeOfDay(
+            hour: int.parse(widget.task['time'].split(':')[0]),
+            minute: int.parse(widget.task['time'].split(':')[1]),
+          )
+        : null;
+    titleController.text = widget.task['title'];
+    descriptionController.text = widget.task['description'] ?? '';
+    selectedCategory = widget.task['category'];
+>>>>>>> SextaVer
   }
 
   @override
@@ -45,6 +70,29 @@ class _EditTaskPageState extends State<EditTaskPage> {
     super.dispose();
   }
 
+<<<<<<< HEAD
+=======
+  Future<void> updateTask(BuildContext context, Map<String, dynamic> updatedTask) async {
+    final db = Provider.of<Database>(context, listen: false);
+
+    await db.update(
+      'tasks',
+      {
+        'title': updatedTask['title'],
+        'description': descriptionController.text.isNotEmpty ? descriptionController.text : null,
+        'category_id': updatedTask['category_id'], // Atualize para usar category_id
+        'date': updatedTask['date']?.toIso8601String(),
+        'time': updatedTask['time'] != null
+            ? '${updatedTask['time']!.hour}:${updatedTask['time']!.minute}'
+            : null,
+        'completed': updatedTask['completed'] == true ? 1 : 0, // Armazena como 0 ou 1
+      },
+      where: 'id = ?',
+      whereArgs: [updatedTask['id']],
+    );
+  }
+
+>>>>>>> SextaVer
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -72,6 +120,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   bool _isFormValid() {
+<<<<<<< HEAD
     return titleController.text.isNotEmpty &&
         descriptionController.text.isNotEmpty &&
         selectedCategory != null;
@@ -90,6 +139,9 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
+=======
+    return titleController.text.isNotEmpty && selectedCategory != null;
+>>>>>>> SextaVer
   }
 
   @override
@@ -150,6 +202,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _isFormValid()
+<<<<<<< HEAD
                   ? () {
                       DateTime scheduledDate = DateTime(
                         _selectedDate!.year,
@@ -167,6 +220,21 @@ class _EditTaskPageState extends State<EditTaskPage> {
                         'date': _selectedDate,
                         'time': _selectedTime,
                       });
+=======
+                  ? () async {
+                      final updatedTask = {
+                        'id': widget.task['id'],
+                        'title': titleController.text,
+                        'description': descriptionController.text,
+                        'category': selectedCategory,
+                        'date': _selectedDate,
+                        'time': _selectedTime,
+                        'completed': widget.task['completed'],
+                      };
+
+                      await updateTask(context, updatedTask);
+                      widget.onSave(updatedTask);
+>>>>>>> SextaVer
                       Navigator.of(context).pop();
                     }
                   : null,

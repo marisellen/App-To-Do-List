@@ -107,12 +107,21 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+<<<<<<< HEAD
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: const Text('Alteração feita com sucesso!'),
                             backgroundColor: Color.fromARGB(168, 204, 171, 244),
                           ),
                         );
+=======
+                        // Retornar os dados para a ProfilePage
+                        Navigator.pop(context, {
+                          'name': _nameController.text,
+                          'email': _emailController.text,
+                          'birthDate': _birthDate,
+                        });
+>>>>>>> SextaVer
                       }
                     },
                     style: ElevatedButton.styleFrom(

@@ -1,9 +1,23 @@
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 import 'configure/settings-page.dart';
 import 'configure/theme_manager.dart';
+=======
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
+import 'configure/settings-page.dart';
+import 'configure/theme_manager.dart';
+import 'firebase_options.dart';
+>>>>>>> SextaVer
 import 'login/login_page.dart';
 import 'login/register_page.dart';
 import 'menu/home_page.dart';
@@ -12,6 +26,14 @@ import 'menu/home_page.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
+<<<<<<< HEAD
+=======
+WidgetsFlutterBinding.ensureInitialized();
+await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
+
+>>>>>>> SextaVer
   WidgetsFlutterBinding.ensureInitialized();
 
   // Configuração para inicializar notificações no Android
@@ -25,16 +47,47 @@ Future<void> main() async {
   // Inicialização do plugin de notificações
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
+<<<<<<< HEAD
+=======
+  // Inicialização das time zones
+  tz.initializeTimeZones();
+
+  // Inicializando o banco de dados SQLite
+  final Database database = await initDatabase();
+
+>>>>>>> SextaVer
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeManager()),
+<<<<<<< HEAD
+=======
+        Provider(create: (context) => database), // Banco de dados fornecido no app
+>>>>>>> SextaVer
       ],
       child: const MyApp(),
     ),
   );
 }
 
+<<<<<<< HEAD
+=======
+Future<Database> initDatabase() async {
+  final dbPath = await getDatabasesPath();
+  final path = join(dbPath, 'tasks.db');
+
+  return openDatabase(
+    path,
+    version: 1,
+    onCreate: (db, version) {
+      return db.execute(
+        'CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, done INTEGER NOT NULL)',
+      );
+    },
+  );
+}
+
+>>>>>>> SextaVer
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -91,5 +144,9 @@ class MyApp extends StatelessWidget {
       payload: 'item x', // Dado opcional para identificar a notificação
     );
   }
+<<<<<<< HEAD
 }
 
+=======
+}
+>>>>>>> SextaVer

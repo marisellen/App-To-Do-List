@@ -15,11 +15,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+<<<<<<< HEAD
   provider: ^6.0.5  # Atualizado para a versão mais recente
   cupertino_icons: ^1.0.5  # Atualizado para manter a consistência
   intl: ^0.19.0     # Atualizado para a versão mais recente
   flutter_local_notifications: ^18.0.1  # Atualizado para a versão mais recente
   shared_preferences: ^2.3.3  # Atualizado para a versão mais recente
+=======
+  provider: ^6.0.5
+  cupertino_icons: ^1.0.5
+  intl: ^0.19.0
+  flutter_local_notifications: ^18.0.1
+  shared_preferences: ^2.3.3
+  sqflite: ^2.0.0+4   
+  path: ^1.8.3
+  timezone: ^0.10.0
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.3
+  google_sign_in: ^6.1.4
+>>>>>>> SextaVer
 
 # Dependências para desenvolvimento e testes
 dev_dependencies:

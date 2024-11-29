@@ -11,6 +11,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+<<<<<<< HEAD
   // Variável para armazenar a imagem do perfil
   String? _imagePath;
 
@@ -22,6 +23,20 @@ class _ProfilePageState extends State<ProfilePage> {
   void _changeImage() async {
     setState(() {
       _imagePath = 'assets/fotoPerfil.png'; // Exemplo de imagem
+=======
+  String? _name = 'User';
+  String? _email = 'user@example.com';
+  DateTime? _birthDate = DateTime(1990, 5, 25);
+
+  String? _imagePath;
+
+  final Color _headerColor =
+      Color.fromARGB(168, 204, 171, 244);
+
+  void _changeImage() async {
+    setState(() {
+      _imagePath = 'assets/fotoPerfil.png';
+>>>>>>> SextaVer
     });
   }
 
@@ -29,7 +44,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+<<<<<<< HEAD
         backgroundColor: _headerColor, // Cor do cabeçalho
+=======
+        backgroundColor: _headerColor,
+>>>>>>> SextaVer
         title: const Text("Meu Perfil"),
       ),
       body: ListView(
@@ -39,10 +58,17 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Row(
               children: [
                 GestureDetector(
+<<<<<<< HEAD
                   onTap: _changeImage, // Ao clicar, muda a foto
                   child: Container(
                     width: 50.0, // Tamanho do quadrado
                     height: 50.0, // Tamanho do quadrado
+=======
+                  onTap: _changeImage,
+                  child: Container(
+                    width: 50.0,
+                    height: 50.0,
+>>>>>>> SextaVer
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: _imagePath == null
@@ -62,18 +88,36 @@ class _ProfilePageState extends State<ProfilePage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+<<<<<<< HEAD
                     const Text(
                       'User',
                       style: TextStyle(
                         fontSize: 18,
+=======
+                    Text(
+                      _name!,
+                      style: TextStyle(
+                        fontSize: 16,
+>>>>>>> SextaVer
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(168, 204, 171, 244),
                       ),
                     ),
                     const SizedBox(height: 4.0),
+<<<<<<< HEAD
                     const Text(
                       'Email: user@example.com',
                       style: TextStyle(fontSize: 14, color: Colors.grey),
+=======
+                    Text(
+                      'Email: $_email',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      'Data de Nascimento: ${_birthDate != null ? '${_birthDate!.day.toString().padLeft(2, '0')}/${_birthDate!.month.toString().padLeft(2, '0')}/${_birthDate!.year}' : 'Não informada'}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+>>>>>>> SextaVer
                     ),
                   ],
                 ),
@@ -86,13 +130,30 @@ class _ProfilePageState extends State<ProfilePage> {
                 const Icon(Icons.person, color: Color.fromARGB(168, 204, 171, 244)),
             title: const Text('Dados Pessoais',
                 style: TextStyle(
+<<<<<<< HEAD
                     color: Color.fromARGB(168, 204, 171, 244), fontSize: 13)),
             onTap: () {
               Navigator.push(
+=======
+                    color: Color.fromARGB(168, 204, 171, 244), fontSize: 10)),
+            onTap: () async {
+              final result = await Navigator.push(
+>>>>>>> SextaVer
                 context,
                 MaterialPageRoute(
                     builder: (context) => const PersonalDataPage()),
               );
+<<<<<<< HEAD
+=======
+
+              if (result != null) {
+                setState(() {
+                  _name = result['name'];
+                  _email = result['email'];
+                  _birthDate = result['birthDate'];
+                });
+              }
+>>>>>>> SextaVer
             },
           ),
           ListTile(
@@ -100,7 +161,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Color.fromARGB(168, 204, 171, 244)),
             title: const Text('Contato',
                 style: TextStyle(
+<<<<<<< HEAD
                     color: Color.fromARGB(168, 204, 171, 244), fontSize: 13)),
+=======
+                    color: Color.fromARGB(168, 204, 171, 244), fontSize: 10)),
+>>>>>>> SextaVer
             onTap: () {
               Navigator.push(
                 context,
@@ -113,3 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> SextaVer

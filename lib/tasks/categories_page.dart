@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import 'package:app_to_do_list/database/database_helper.dart';
+>>>>>>> SextaVer
 import 'package:flutter/material.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -10,7 +14,12 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
+<<<<<<< HEAD
   final List<Map<String, dynamic>> _categories = []; 
+=======
+  // Inicializa a lista de categorias como vazia
+  final List<Map<String, dynamic>> _categories = [];
+>>>>>>> SextaVer
   final TextEditingController _categoryController = TextEditingController();
 
   @override
@@ -19,12 +28,25 @@ class _CategoriesPageState extends State<CategoriesPage> {
     super.dispose();
   }
 
+<<<<<<< HEAD
   void _addCategory() {
     if (_categoryController.text.isNotEmpty) {
       setState(() {
         _categories.add({
           'name': _categoryController.text,
           'tasks': <String>[], 
+=======
+  // Método para adicionar categoria ao banco de dados
+  Future<void> _addCategory() async {
+    if (_categoryController.text.isNotEmpty) {
+      String categoryName = _categoryController.text;
+      int categoryId = await DatabaseHelper().addCategory(categoryName); // Salva a categoria no banco
+      setState(() {
+        _categories.add({
+          'id': categoryId,
+          'name': categoryName,
+          'tasks': <String>[], // Inicialmente sem tarefas
+>>>>>>> SextaVer
         });
         _categoryController.clear();
         widget.onCategoriesUpdated(_categories); // Atualiza a lista de categorias na HomePage
@@ -37,6 +59,19 @@ class _CategoriesPageState extends State<CategoriesPage> {
     }
   }
 
+<<<<<<< HEAD
+=======
+  // Método para carregar as categorias do banco de dados
+  Future<void> _loadCategories() async {
+    List<Map<String, dynamic>> categories = await DatabaseHelper().getCategories(); // Carrega as categorias
+    setState(() {
+      _categories.clear(); // Limpa as categorias antes de adicionar as carregadas
+      _categories.addAll(categories); // Adiciona as categorias carregadas
+    });
+  }
+
+  // Método para adicionar tarefa à categoria
+>>>>>>> SextaVer
   void _addTaskToCategory(int index) {
     TextEditingController taskController = TextEditingController();
 
@@ -57,6 +92,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               child: const Text('Cancelar'),
             ),
             TextButton(
+<<<<<<< HEAD
               onPressed: () {
                 if (taskController.text.isNotEmpty) {
                   setState(() {
@@ -64,6 +100,27 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     widget.onCategoriesUpdated(_categories); // Atualiza a lista de categorias
                     Navigator.of(context).pop();
                   });
+=======
+              onPressed: () async {
+                if (taskController.text.isNotEmpty) {
+                  final db = DatabaseHelper();
+
+                  // Adiciona a tarefa
+                  int taskId = await db.addTask(taskController.text);
+
+                  // Associa a tarefa à categoria
+                  int categoryId = _categories[index]['id'];
+                  await db.updateTaskCategory(taskId, categoryId);
+
+                  setState(() {
+                    // Atualiza a lista de tarefas e categorias
+                    _categories[index]['tasks'] = _categories[index]['tasks'] ?? [];
+                    _categories[index]['tasks'].add(taskController.text); // Garante que 'tasks' nunca seja null
+                    widget.onCategoriesUpdated(_categories); // Atualiza a lista de categorias
+                  });
+
+                  Navigator.of(context).pop();
+>>>>>>> SextaVer
                 } else {
                   // Exibe um alerta se o nome da tarefa estiver vazio
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -80,6 +137,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
   }
 
   @override
+<<<<<<< HEAD
+=======
+  void initState() {
+    super.initState();
+    _loadCategories(); // Carrega as categorias ao iniciar, mas a lista inicial é vazia
+  }
+
+  @override
+>>>>>>> SextaVer
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -108,10 +174,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 itemCount: _categories.length,
                 itemBuilder: (context, index) {
                   final category = _categories[index];
+<<<<<<< HEAD
                   return Card(
                     child: ListTile(
                       title: Text(category['name']),
                       subtitle: Text('Tarefas: ${category['tasks'].join(', ')}'),
+=======
+                  final tasks = category['tasks'] ?? []; // Garante que 'tasks' nunca seja null
+                  return Card(
+                    child: ListTile(
+                      title: Text(category['name']),
+                      subtitle: Text('Tarefas: ${tasks.join(', ')}'), // Exibe tarefas
+>>>>>>> SextaVer
                       trailing: IconButton(
                         icon: const Icon(Icons.add),
                         onPressed: () => _addTaskToCategory(index),
@@ -126,4 +200,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> SextaVer
