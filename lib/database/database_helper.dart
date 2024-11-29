@@ -9,114 +9,117 @@ class DatabaseHelper {
   static Database? _database;
 
   // Obtém a instância do banco de dados
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
-    return _database!;
-  }
+Future<Database> get database async {
+  // Verifica se o banco de dados já está inicializado
+  if (_database != null) return _database!;
+
+  // Se o banco não foi inicializado, chama a função de inicialização
+  _database = await _initDatabase();
+  return _database!;
+}
 
   // Inicializa o banco de dados
   Future<Database> _initDatabase() async {
-  // await deleteDatabase(await getDatabasesPath() + '/tasks.db');
+    // await deleteDatabase(await getDatabasesPath() + '/tasks.db');
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'tasks.db');
 
-  return openDatabase(
-    path,
-    version: 3, // Atualize a versão para 3
-    onCreate: (db, version) async {
-      // Criação da tabela tasks
-      await db.execute(''' 
-        CREATE TABLE tasks (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title TEXT NOT NULL,
-          description TEXT,
-          completed INTEGER,
-          date TEXT,
-          time TEXT
-        )
-      ''');
+    return openDatabase(
+      path,
+      version: 3, // Atualize a versão para 3
+      onCreate: (db, version) async {
+        // Criação da tabela tasks
+        await db.execute(''' 
+          CREATE TABLE tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            category_id INTEGER,  -- Coluna que referencia a categoria
+            completed INTEGER,
+            date TEXT,
+            time TEXT,
+            FOREIGN KEY (category_id) REFERENCES categories (id) -- Relacionamento com a tabela categories
+          )
+        ''');
 
-      // Criação da tabela categories
-      await db.execute(''' 
-        CREATE TABLE categories (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL
-        )
-      ''');
-
-      // Tabela intermediária para relacionar tarefas e categorias
-      await db.execute(''' 
-        CREATE TABLE task_categories (
-          task_id INTEGER,
-          category_id INTEGER,
-          PRIMARY KEY (task_id, category_id),
-          FOREIGN KEY (task_id) REFERENCES tasks (id),
-          FOREIGN KEY (category_id) REFERENCES categories (id)
-        )
-      ''');
-    },
-    onUpgrade: (db, oldVersion, newVersion) async {
-      if (oldVersion < 3) {
-        // Atualização do banco para incluir novas colunas
+        // Criação da tabela categories
+        await db.execute(''' 
+          CREATE TABLE categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL
+          )
+        ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 3) {
+          // Atualização do banco para incluir novas colunas
           await db.execute('ALTER TABLE tasks ADD COLUMN description TEXT');
           await db.execute('ALTER TABLE tasks ADD COLUMN date TEXT');
           await db.execute('ALTER TABLE tasks ADD COLUMN time TEXT');
-        // Criação da tabela task_categories
-        await db.execute(''' 
-          CREATE TABLE task_categories (
-            task_id INTEGER,
-            category_id INTEGER,
-            PRIMARY KEY (task_id, category_id),
-            FOREIGN KEY (task_id) REFERENCES tasks (id),
-            FOREIGN KEY (category_id) REFERENCES categories (id)
-          )
-        ''');
-      }
-    },
-  );
-}
+          await db.execute('ALTER TABLE tasks ADD COLUMN category_id INTEGER');
+          
+          // Adiciona o relacionamento com a tabela categories
+          await db.execute(''' 
+            CREATE TABLE IF NOT EXISTS categories (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              name TEXT NOT NULL
+            )
+          ''');
 
-// Associa uma tarefa a uma categoria
-Future<void> addTaskToCategory(int taskId, int categoryId) async {
-  final db = await database;
-  await db.insert(
-    'task_categories',
-    {
-      'task_id': taskId,
-      'category_id': categoryId,
-    },
-    conflictAlgorithm: ConflictAlgorithm.ignore, // Ignora se a associação já existir
-  );
-}
+        }
+      },
+    );
+  }
 
-// Obtém as categorias associadas a uma tarefa
-Future<List<Map<String, dynamic>>> getCategoriesForTask(int taskId) async {
-  final db = await database;
-  final List<Map<String, dynamic>> categories = await db.rawQuery('''
-    SELECT c.id, c.name
-    FROM categories c
-    INNER JOIN task_categories tc ON c.id = tc.category_id
-    WHERE tc.task_id = ?
-  ''', [taskId]);
+  // Adiciona uma categoria a uma tarefa
+  Future<void> updateTaskCategory(int taskId, int categoryId) async {
+    final db = await database;
+    await db.update(
+      'tasks',
+      {'category_id': categoryId}, // Atualiza category_id, não category
+      where: 'id = ?',
+      whereArgs: [taskId],
+    );
+  }
 
-  return categories;
-}
+  // Remove a categoria de uma tarefa
+  Future<void> removeCategoryFromTask(int taskId) async {
+    final db = await database;
+    await db.update(
+      'tasks',
+      {'category_id': null}, // Remove a categoria
+      where: 'id = ?',
+      whereArgs: [taskId],
+    );
+  }
 
-// Obtém as tarefas associadas a uma categoria
-Future<List<Map<String, dynamic>>> getTasksForCategory(int categoryId) async {
-  final db = await database;
-  final List<Map<String, dynamic>> tasks = await db.rawQuery('''
-    SELECT t.id, t.title
-    FROM tasks t
-    INNER JOIN task_categories tc ON t.id = tc.task_id
-    WHERE tc.category_id = ?
-  ''', [categoryId]);
+  // Obtém a categoria associada a uma tarefa
+  Future<Map<String, dynamic>?> getCategoryForTask(int taskId) async {
+    final db = await database;
+    final List<Map<String, dynamic>> result = await db.rawQuery(''' 
+      SELECT c.id, c.name
+      FROM categories c
+      INNER JOIN tasks t ON t.category_id = c.id
+      WHERE t.id = ?
+    ''', [taskId]);
 
-  return tasks;
-}
+    // Retorna a categoria ou null se não houver
+    return result.isNotEmpty ? result.first : null;
+  }
 
-  // Adiciona uma nova tarefa com apenas o título
+  // Obtém as tarefas associadas a uma categoria
+  Future<List<Map<String, dynamic>>> getTasksForCategory(int categoryId) async {
+    final db = await database;
+    final List<Map<String, dynamic>> tasks = await db.rawQuery(''' 
+      SELECT t.id, t.title
+      FROM tasks t
+      WHERE t.category_id = ?
+    ''', [categoryId]);
+
+    return tasks;
+  }
+
+  // Adiciona uma nova tarefa com apenas o título (sem categoria inicialmente)
   Future<int> addTask(String title) async {
     final db = await database;
     return db.insert(
@@ -124,7 +127,7 @@ Future<List<Map<String, dynamic>>> getTasksForCategory(int categoryId) async {
       {
         'title': title,
         'description': null,
-        'category': null,
+        'category_id': null,  // Inicializa com null, sem categoria
         'completed': 0,
         'date': null,
         'time': null,
@@ -134,10 +137,10 @@ Future<List<Map<String, dynamic>>> getTasksForCategory(int categoryId) async {
   }
 
   // Atualiza uma tarefa existente com descrição, categoria e status
-Future<int> updateTask(
+  Future<int> updateTask(
     int id, {
     String? description,
-    String? category,
+    int? categoryId,  // Alteração para aceitar categoryId em vez de category
     String? date,
     String? time,
     int? completed,
@@ -146,7 +149,7 @@ Future<int> updateTask(
 
     final updates = {
       if (description != null) 'description': description,
-      if (category != null) 'category': category,  // Certifique-se de que a categoria é atualizada
+      if (categoryId != null) 'category_id': categoryId,  // Atualiza category_id
       if (date != null) 'date': date,
       if (time != null) 'time': time,
       if (completed != null) 'completed': completed,
