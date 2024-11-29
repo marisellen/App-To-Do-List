@@ -2,7 +2,7 @@
 
 #### membros:
 Mariana Selene [@marisellen](https://github.com/marisellen)  
-Marianna Angélica
+Marianna Angélica [@mariannamatos29](https://github.com/mariannamatos29)
 
 
 
