@@ -72,17 +72,6 @@ class _ContactPageState extends State<ContactPage> {
           child: Column(
             children: [
               TextFormField(
-                controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Telefone Fixo'),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, preencha o telefone fixo';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
                 controller: _mobileController,
                 decoration:
                     const InputDecoration(labelText: 'Telefone Celular'),

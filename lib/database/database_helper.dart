@@ -20,7 +20,7 @@ Future<Database> get database async {
 
   // Inicializa o banco de dados
   Future<Database> _initDatabase() async {
-await deleteDatabase(await getDatabasesPath() + '/tasks.db');
+//await deleteDatabase(await getDatabasesPath() + '/tasks.db');
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'tasks.db');
 

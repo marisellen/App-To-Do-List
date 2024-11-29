@@ -66,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Text(
                       _name!,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(168, 204, 171, 244),
                       ),
@@ -74,12 +74,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 4.0),
                     Text(
                       'Email: $_email',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(height: 4.0),
                     Text(
                       'Data de Nascimento: ${_birthDate != null ? '${_birthDate!.day.toString().padLeft(2, '0')}/${_birthDate!.month.toString().padLeft(2, '0')}/${_birthDate!.year}' : 'Não informada'}',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -92,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const Icon(Icons.person, color: Color.fromARGB(168, 204, 171, 244)),
             title: const Text('Dados Pessoais',
                 style: TextStyle(
-                    color: Color.fromARGB(168, 204, 171, 244), fontSize: 13)),
+                    color: Color.fromARGB(168, 204, 171, 244), fontSize: 10)),
             onTap: () async {
               final result = await Navigator.push(
                 context,
@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Color.fromARGB(168, 204, 171, 244)),
             title: const Text('Contato',
                 style: TextStyle(
-                    color: Color.fromARGB(168, 204, 171, 244), fontSize: 13)),
+                    color: Color.fromARGB(168, 204, 171, 244), fontSize: 10)),
             onTap: () {
               Navigator.push(
                 context,

@@ -185,7 +185,7 @@ void _openCategoriesPage() {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -196,19 +196,19 @@ void _openCategoriesPage() {
                 labelText: 'Pesquisar tarefas',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+                  borderRadius: BorderRadius.circular(25.0),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+                  borderRadius: BorderRadius.circular(25.0),
                   borderSide: const BorderSide(color: Colors.blue),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+                  borderRadius: BorderRadius.circular(25.0),
                   borderSide: const BorderSide(color: Colors.grey),
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 10.0),
             TextField(
               controller: _taskController,
               decoration: const InputDecoration(
@@ -216,7 +216,7 @@ void _openCategoriesPage() {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 10.0),
             Expanded(
               child: ListView.builder(
                 itemCount: _filteredTasks().length,
@@ -261,7 +261,7 @@ void _openCategoriesPage() {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 16.0),
+              padding: const EdgeInsets.only(top: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -271,7 +271,7 @@ void _openCategoriesPage() {
                   ),
                   ElevatedButton(
                     onPressed: _addTask,
-                    child: const Text('Adicionar Tarefa'),
+                    child: const Text('Adicionar'),
                   ),
                   ElevatedButton(
                     onPressed: _openRemindersPage,
