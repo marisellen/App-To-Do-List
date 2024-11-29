@@ -49,26 +49,25 @@ class _EditTaskPageState extends State<EditTaskPage> {
     super.dispose();
   }
 
-Future<void> updateTask(BuildContext context, Map<String, dynamic> updatedTask) async {
-  final db = Provider.of<Database>(context, listen: false);
+  Future<void> updateTask(BuildContext context, Map<String, dynamic> updatedTask) async {
+    final db = Provider.of<Database>(context, listen: false);
 
-  await db.update(
-    'tasks',
-    {
-      'title': updatedTask['title'],
-      'description': descriptionController.text.isNotEmpty ? descriptionController.text : null,
-      'category': updatedTask['category'],
-      'date': updatedTask['date']?.toIso8601String(),
-      'time': updatedTask['time'] != null
-          ? '${updatedTask['time']!.hour}:${updatedTask['time']!.minute}'
-          : null,
-'completed': updatedTask['completed'] == 1 ? true : false,
-    },
-    where: 'id = ?',
-    whereArgs: [updatedTask['id']],
-  );
-}
-
+    await db.update(
+      'tasks',
+      {
+        'title': updatedTask['title'],
+        'description': descriptionController.text.isNotEmpty ? descriptionController.text : null,
+        'category_id': updatedTask['category_id'], // Atualize para usar category_id
+        'date': updatedTask['date']?.toIso8601String(),
+        'time': updatedTask['time'] != null
+            ? '${updatedTask['time']!.hour}:${updatedTask['time']!.minute}'
+            : null,
+        'completed': updatedTask['completed'] == true ? 1 : 0, // Armazena como 0 ou 1
+      },
+      where: 'id = ?',
+      whereArgs: [updatedTask['id']],
+    );
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -97,8 +96,7 @@ Future<void> updateTask(BuildContext context, Map<String, dynamic> updatedTask) 
   }
 
   bool _isFormValid() {
-    return titleController.text.isNotEmpty &&
-        selectedCategory != null;
+    return titleController.text.isNotEmpty && selectedCategory != null;
   }
 
   @override
@@ -173,7 +171,6 @@ Future<void> updateTask(BuildContext context, Map<String, dynamic> updatedTask) 
                       await updateTask(context, updatedTask);
                       widget.onSave(updatedTask);
                       Navigator.of(context).pop();
-;
                     }
                   : null,
               child: const Text('Salvar'),
