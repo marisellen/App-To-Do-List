@@ -1,0 +1,40 @@
+name: app_to_do_list
+description: A new Flutter project.
+
+# Se deseja publicar no pub.dev, remova a linha abaixo
+publish_to: 'none'
+
+# Versão do aplicativo
+version: 1.0.0+1
+
+# Configurações do ambiente Flutter/Dart
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+# Dependências do projeto
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.5
+  cupertino_icons: ^1.0.5
+  intl: ^0.19.0
+  flutter_local_notifications: ^18.0.1
+  shared_preferences: ^2.3.3
+  sqflite: ^2.0.0+4   
+  path: ^1.8.3
+  timezone: ^0.10.0
+
+# Dependências para desenvolvimento e testes
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0  # Atualizado para a versão mais recente
+
+# Configurações específicas do Flutter
+flutter:
+  uses-material-design: true
+
+  # Definição de ativos (imagens, etc.)
+  assets:
+    - assets/user.png
+    - assets/fotoPerfil.png
