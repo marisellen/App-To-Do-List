@@ -1,5 +1,5 @@
 import 'package:app_to_do_list/database/database_helper.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 
 class CategoriesPage extends StatefulWidget {
   final Function(List<Map<String, dynamic>>) onCategoriesUpdated; // Callback para atualizar categorias
@@ -82,7 +82,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
                   // Associa a tarefa à categoria
                   int categoryId = _categories[index]['id'];
-                  await db.addTaskToCategory(taskId, categoryId);
+                  await db.updateTaskCategory(taskId, categoryId);
 
                   setState(() {
                     // Atualiza a lista de tarefas e categorias
